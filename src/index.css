@@ -1,0 +1,74 @@
+/* Global Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container */
+.MuiContainer-root {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+}
+
+/* Typography */
+.MuiTypography-h4 {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.MuiTypography-h6 {
+  margin-top: 20px;
+}
+
+/* Input Fields */
+.MuiTextField-root {
+  margin-top: 16px;
+}
+
+input {
+  border-radius: 8px;
+}
+
+/* Button */
+.MuiButton-root {
+  margin-top: 20px;
+  background-color: #1976d2;
+  padding: 12px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.MuiButton-root:hover {
+  background-color: #145a9e;
+}
+
+.MuiCircularProgress-root {
+  color: white;
+}
+
+/* Result Styling */
+.valid {
+  color: green;
+}
+
+.invalid {
+  color: red;
+}

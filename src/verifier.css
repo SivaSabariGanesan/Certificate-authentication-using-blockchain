@@ -1,0 +1,84 @@
+/* Resetting default margin and padding for all elements */
+/* Global Styles */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  color: black;
+  background: linear-gradient(135deg, #6e8efb, #a777e3); /* Adjust gradient colors as needed */
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* Gradient background for the landing page */
+.landing-page {
+  width: 300vh;
+  height: 100vh;
+  display: flex;
+  justify-content: center; /* Centers content horizontally */
+  align-items: center; /* Centers content vertically */
+  background: linear-gradient(135deg, #6E48AA, #9D50BB, #C04848, #480048);
+  background-size: 400% 400%;
+  animation: gradientBG 10s ease infinite;
+  color: rgb(14, 13, 13);
+}
+
+/* Gradient background animation to shift colors smoothly */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Centering content inside the landing page */
+.content {
+  text-align: center;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.1); /* Adding slight transparency */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Adding depth with a shadow */
+}
+
+/* Styling the main heading */
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  letter-spacing: 2px;
+  color: #0f0e0e;
+}
+
+/* Styling the paragraph */
+p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem; /* Adds space between the paragraph and the button */
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Button styles */
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background-color: #ff4d4f;
+  border: none;
+  color: rgb(157, 15, 15);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 50px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Button hover effect */
+.btn-primary:hover {
+  background-color: #ff1c1f;
+  transform: scale(1.05);
+}
