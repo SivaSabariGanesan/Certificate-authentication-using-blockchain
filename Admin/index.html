@@ -1,0 +1,334 @@
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple One-Time Transfer NFT</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <style>
+        /* Basic reset for padding and margins */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles with an animated gradient background */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #84fab0, #8fd3f4, #a6c1ee, #d4fc79);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Main container with a glass effect */
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Stylish heading */
+        h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+
+        /* Input field styles */
+        input {
+            width: calc(100% - 40px);
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Button styles */
+        button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #0059b3;
+            transform: translateY(-5px);
+            box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(-2px);
+            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Result messages */
+        p {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>VERIFICATION PAGE</h1>
+
+        <!-- Mint Section -->
+        <h2>Mint a New NFT</h2>
+        <input type="text" id="tokenURI" placeholder="Enter token URI (JSON metadata)">
+        <button onclick="mintNFT()">Mint NFT</button>
+        <p id="mintResult"></p>
+
+        <!-- Transfer Section -->
+        <h2>Transfer an NFT</h2>
+        <input type="text" id="toAddress" placeholder="Recipient address">
+        <input type="number" id="tokenIdTransfer" placeholder="Token ID">
+        <button onclick="transferNFT()">Transfer NFT</button>
+        <p id="transferResult"></p>
+    </div>
+
+    <script>
+        let contract;
+        let web3;
+
+        const contractAddress = "0x9a4937CEE4dD3a1ce061487C3A6CDD4081E6b8ea"; // Replace with your deployed contract address
+        const contractABI = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "tokenURI",
+                        "type": "string"
+                    }
+                ],
+                "name": "mint",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ownerOf",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "tokenURI",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        // Initialize Web3
+        async function initWeb3() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.enable(); // Request account access
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    console.log('Web3 initialized');
+                } catch (error) {
+                    console.error("User denied account access", error);
+                }
+            } else {
+                console.error("Non-Ethereum browser detected. Install MetaMask!");
+            }
+        }
+
+        // Mint NFT
+        async function mintNFT() {
+            const tokenURI = document.getElementById("tokenURI").value;
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+
+            contract.methods.mint(tokenURI).send({ from: account })
+                .then((receipt) => {
+                    document.getElementById("mintResult").innerText = `NFT minted with transaction hash: ${receipt.transactionHash}`;
+                })
+                .catch((error) => {
+                    console.error("Error minting NFT:", error);
+                    document.getElementById("mintResult").innerText = "Error minting NFT.";
+                });
+        }
+
+        // Transfer NFT
+        async function transferNFT() {
+            const toAddress = document.getElementById("toAddress").value;
+            const tokenId = document.getElementById("tokenIdTransfer").value;
+            const accounts = await web3.eth.getAccounts();
+            const account = accounts[0];
+
+            contract.methods.transfer(toAddress, tokenId).send({ from: account })
+                .then((receipt) => {
+                    document.getElementById("transferResult").innerText = `NFT transferred with transaction hash: ${receipt.transactionHash}`;
+                })
+                .catch((error) => {
+                    console.error("Error transferring NFT:", error);
+                    document.getElementById("transferResult").innerText = "Error transferring NFT.";
+                });
+        }
+
+        // Initialize web3 when the page loads
+        window.addEventListener('load', initWeb3);
+    </script>
+</body>
+
+</html>
